@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: email-service-api
+    env: node
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: PORT
+        value: 10000
