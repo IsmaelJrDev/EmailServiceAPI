@@ -23,12 +23,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Clase del serviicio de correo
+// Clase del servicio de correo
 class emailService {
     static async send(data) {
         const { name, email, subject, message } = data;
 
-        // Plantilla HTML mejorada
+        // Plantilla HTML del correo de respuesta
         const emailbody = `
             <!DOCTYPE html>
             <html>
@@ -43,7 +43,7 @@ class emailService {
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>Nuevo mensaje desde el portafolio</h1>
+                        <h1>Nuevo mensaje desde el servicio de API</h1>
                     </div>
                     <div class="content">
                         <p><strong>Nombre:</strong> ${name}</p>

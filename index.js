@@ -14,15 +14,11 @@ app.use(cors());
 app.use(express.json());
 
 
-
-
 // Función de validación de email
 const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
 };
-
-
 
 
 // Rutas
@@ -40,7 +36,7 @@ app.post('/api/send-email', async (req, res) => {
         } = req.body;
 
 
-        // Validación mejorada
+        // Validación de los campos
         if (!name?.trim()) {
             return res.status(400).json({ error: 'El nombre es requerido' });
         }
@@ -69,6 +65,8 @@ app.post('/api/send-email', async (req, res) => {
     }
 });
 
+
+// Ruta de estado para verificar que la API está en línea
 app.get('/api/status', (req, res) => {
     res.json({
         status: 'online',
