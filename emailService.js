@@ -1,6 +1,17 @@
 const nodemailer = require('nodemailer');
 
 // Conexion al servicio de Gmail
+console.log('Configurando transporter con:', {
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        // No mostramos la contraseña por seguridad
+        pass: '****'
+    }
+});
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -8,43 +19,58 @@ const transporter = nodemailer.createTransport({
     // Credenciales de la cuenta de correo desde donde se enviaran los emails  
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        pass: process.env.EMAIL_PASSWORD
     }
 });
 
 // Clase del serviicio de correo
 class emailService {
-    static async send(data){
-        const {
-            name,
-            email,
-            subject,
-            message
-        } = data;
+    static async send(data) {
+        const { name, email, subject, message } = data;
 
-        // Configuracion del correo destinatario 
-        const recieverEmail = process.env.EMAIL_USER
-        
-        // Cuerpo del correo 
+        // Plantilla HTML mejorada
         const emailbody = `
-            <h1>Nuevo mensaje de ${name}</h1>
-            <p><strong>Correo:</strong> ${email}</p>
-            <p><strong>Asunto:</strong> ${subject}</p>
-            <p><strong>Mensaje:</strong> ${message}</p>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; }
+                    .container { padding: 20px; }
+                    .header { background-color: #f8f9fa; padding: 15px; }
+                    .content { margin: 20px 0; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Nuevo mensaje desde el portafolio</h1>
+                    </div>
+                    <div class="content">
+                        <p><strong>Nombre:</strong> ${name}</p>
+                        <p><strong>Correo:</strong> ${email}</p>
+                        <p><strong>Asunto:</strong> ${subject}</p>
+                        <p><strong>Mensaje:</strong></p>
+                        <p>${message}</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         `;
 
         const mailOptions = {
-            from: `"${name}" <${email}>`, // Remitente
-            to: recieverEmail, // Destinatario
-            subject: subject, // Asunto
-            html: emailbody // Cuerpo del correo en formato HTML
+            from: `"Portafolio Contact" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_USER,
+            subject: `Nuevo mensaje: ${subject}`,
+            html: emailbody,
+            replyTo: email
         };
 
-        try{
-            await transporter.sendMail(mailOptions);
-            console.log('Correo enviado correctamente');
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            return { success: true, messageId: info.messageId };
         } catch (error) {
             console.error('Error en EmailService:', error);
+            console.error('Detalles completos del error:', JSON.stringify(error, null, 2));
             throw new Error('Error al enviar el correo: ' + error.message);
         }
     }

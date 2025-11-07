@@ -16,6 +16,15 @@ app.use(express.json());
 
 
 
+// Función de validación de email
+const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+};
+
+
+
+
 // Rutas
 app.get('/', (req, res) => {
     res.send('API funcionando correctamente');
@@ -31,9 +40,18 @@ app.post('/api/send-email', async (req, res) => {
         } = req.body;
 
 
-        // Validacion de los datos recibidos
-        if (!name || !email || !subject || !message) {
-            return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+        // Validación mejorada
+        if (!name?.trim()) {
+            return res.status(400).json({ error: 'El nombre es requerido' });
+        }
+        if (!email?.trim() || !validateEmail(email)) {
+            return res.status(400).json({ error: 'Email inválido' });
+        }
+        if (!subject?.trim()) {
+            return res.status(400).json({ error: 'El asunto es requerido' });
+        }
+        if (!message?.trim()) {
+            return res.status(400).json({ error: 'El mensaje es requerido' });
         }
 
         await EmailService.send({
@@ -49,6 +67,14 @@ app.post('/api/send-email', async (req, res) => {
         console.error('Error al enviar el correo:', error);
         res.status(500).json({ message: 'Error al enviar el correo' });
     }
+});
+
+app.get('/api/status', (req, res) => {
+    res.json({
+        status: 'online',
+        service: 'Email Service API',
+        version: process.env.npm_package_version || '1.0.0'
+    });
 });
 
 // Indica que el servidor este escuchando en el puerto definido
