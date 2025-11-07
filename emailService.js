@@ -3,24 +3,40 @@ const nodemailer = require('nodemailer');
 // Conexion al servicio de Gmail
 console.log('Configurando transporter con:', {
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // STARTTLS
     auth: {
         user: process.env.EMAIL_USER,
         // No mostramos la contraseña por seguridad
         pass: '****'
-    }
+    },
+    tls: {
+        // permite conexiones a servidores con certificados no verificados en entornos controlados
+        rejectUnauthorized: false
+    },
+    // timeouts en ms
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Para abrir el puerto 465
+    port: 587,
+    secure: false, // STARTTLS
     // Credenciales de la cuenta de correo desde donde se enviaran los emails  
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
-    }
+    },
+    tls: {
+        // permite conexiones a servidores con certificados no verificados en entornos controlados
+        rejectUnauthorized: false
+    },
+    // timeouts en ms
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 // Clase del servicio de correo
